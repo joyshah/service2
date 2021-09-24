@@ -7,6 +7,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -18,7 +19,7 @@ import java.io.File;
 public class StartUpConfig {
 
     @Value("${client.ssl.trustStore}")
-    private String trustStore;
+    private Resource trustStore;
 
     @Value("${client.ssl.trustStore.password}")
     private String trustStorePassword;
@@ -31,7 +32,7 @@ public class StartUpConfig {
         final SSLContext sslContext;
         try {
             sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial(new File(trustStore),
+                    .loadTrustMaterial(trustStore.getFile(),
                             trustStorePassword.toCharArray())
                     .setProtocol(sslVersion)
                     .build();
