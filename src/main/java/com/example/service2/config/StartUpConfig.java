@@ -7,18 +7,18 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.SSLContext;
-import java.io.File;
 
 @Configuration
 public class StartUpConfig {
 
     @Value("${client.ssl.trustStore}")
-    private String trustStore;
+    private Resource trustStore;
 
     @Value("${client.ssl.trustStore.password}")
     private String trustStorePassword;
@@ -26,13 +26,25 @@ public class StartUpConfig {
     @Value("${client.ssl.version}")
     private String sslVersion;
 
+    @Value("${client.ssl.keyStore}")
+    private Resource keyStore;
+
+    @Value("${client.ssl.keyStore.keyPassword}")
+    private String keyPassword;
+
+    @Value("${client.ssl.keyStore.storePassword}")
+    private String storePassword;
+
     @Bean
     public RestTemplate getRestTemplate() {
         final SSLContext sslContext;
         try {
             sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial(new File(trustStore),
+                    .loadTrustMaterial(trustStore.getFile(),
                             trustStorePassword.toCharArray())
+                    .loadKeyMaterial(keyStore.getFile(),
+                            storePassword.toCharArray(),
+                            keyPassword.toCharArray())
                     .setProtocol(sslVersion)
                     .build();
         } catch (Exception e) {

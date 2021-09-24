@@ -13,8 +13,12 @@ public class SSLTestController {
     private RestTemplate restTemplate;
 
     @GetMapping("/withTrustStore")
-    public ResponseEntity<String> getDataFromService1OverTLS() {
-        return restTemplate.getForEntity("https://localhost:8081", String.class);
+    public String getDataFromService1OverTLS() {
+        try {
+            return restTemplate.getForEntity("https://localhost:8081", String.class).getBody();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     @GetMapping("/withoutTrustStore")
